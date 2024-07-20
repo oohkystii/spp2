@@ -6,6 +6,7 @@ namespace App\Services;
 require_once realpath(__DIR__ . '/../../vendor/autoload.php');
 
 use App\Models\Message;
+use App\Models\Pembayaran;
 use App\Models\Token;
 use Dotenv\Dotenv;
 use PDO;
@@ -78,18 +79,20 @@ class WaBlasService
         try {
             // Mendapatkan instance PDO
             $pdo = self::getPdo();
-            $query = '
+            $pembayaran = Pembayaran::select('jumlah_dibayar')->where('tagihan_id', $tagihan_details)->sum('jumlah_dibayar');
+            $queryTagihan = '
                 SELECT td.jumlah_biaya
                 FROM tagihan_details td
                 JOIN tagihans t ON td.tagihan_id = t.id
                 WHERE td.tagihan_id = :tagihan
                 LIMIT 1
             ';
-            $stmt = $pdo->prepare($query);
+            $stmt = $pdo->prepare($queryTagihan);
             $stmt->execute([':tagihan' => $tagihan_details]);
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $tagihan = $stmt->fetch(PDO::FETCH_ASSOC);
+            $tagihanBiaya = isset($tagihan['jumlah_biaya']) ? (float)$tagihan['jumlah_biaya'] : 0.0;
             // Mengembalikan jumlah_biaya jika ada, jika tidak, kembalikan 0.0
-            return isset($result['jumlah_biaya']) ? (float)$result['jumlah_biaya'] : 0.0;
+            return $tagihanBiaya - $pembayaran;
         } catch (PDOException $e) {
             // Menangani exception PDO jika terjadi kesalahan
             error_log('Database query error: ' . $e->getMessage());
