@@ -75,14 +75,14 @@ class ProcessTagihanLainStore implements ShouldQueue
                     'nama_biaya' => $itemBiaya->nama,
                     'jumlah_biaya' => $itemBiaya->jumlah,
                 ]);
-                $jumlahBiaya = $itemBiaya->jumlah; 
+                $jumlahBiaya = $itemBiaya->jumlah;
             }
             // sleep(1);
         }
         if (count($numbersHPWali) > 0) {
             $wa = new WaBlasService();
             // $resultMultipleMessage = $wa->sendMultipleMessage($numbersHPWali, $dataSiswa, $requestData['tanggal_tagihan'], $requestData['tanggal_jatuh_tempo'], $jumlahBiaya);
-            $result =  $wa->sendSchedulesMessage($numbersHPWali, $dataSiswa, $requestData['tanggal_tagihan'], $requestData['tanggal_tagihan'], $requestData['tanggal_jatuh_tempo']);
+            $result =  $wa->sendSchedulesMessage($numbersHPWali, $dataSiswa, $requestData['tanggal_tagihan'], $requestData['tanggal_tagihan'], $tagihan->id, $requestData['tanggal_jatuh_tempo']);
         }
         $this->setOutput(['message' => 'Tagihan biaya lain ' . $biaya->nama . ' berhasil dibuat']);
     }

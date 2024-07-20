@@ -44,7 +44,7 @@ class ProcessTagihanStore implements ShouldQueue
         $tanggalPemberitahuanFormatted = $tanggalPemberitahuan->format('Y-m-d H:i:s');
 
         $siswa = Siswa::with('biaya', 'tagihan', 'tagihan.tagihanDetails')->currentStatus('aktif');
-        
+
         if (isset($requestData['siswa_id']) && $requestData['siswa_id'] != null) {
             $siswa = $siswa->where('id', $requestData['siswa_id']);
         }
@@ -89,7 +89,7 @@ class ProcessTagihanStore implements ShouldQueue
         try {
             $wa = new WaBlasService();
             // $wa->sendMultipleMessage($numbersHPWali, $dataSiswa, $tanggalJatuhTempoFormatted, $requestData['tanggal_tagihan'], $jumlahBiaya);
-            $wa->sendSchedulesMessage($numbersHPWali, $dataSiswa, $tanggalPemberitahuanFormatted, $requestData['tanggal_tagihan'], $tanggalJatuhTempoFormatted);
+            $wa->sendSchedulesMessage($numbersHPWali, $dataSiswa, $tanggalPemberitahuanFormatted, $requestData['tanggal_tagihan'], $tagihan->id, $tanggalJatuhTempoFormatted);
             $this->setOutput(['message' => 'Tagihan Bulan ' . ubahNamaBulan($bulanTagihan) . ' ' . $tahunTagihan . ' berhasil dibuat']);
         } catch (\Exception $e) {
             $this->setOutput(['message' => 'Tagihan Bulan ' . ubahNamaBulan($bulanTagihan) . ' ' . $tahunTagihan . ' gagal dikirim. Error: ' . $e->getMessage()]);

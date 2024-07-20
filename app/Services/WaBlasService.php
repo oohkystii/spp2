@@ -63,7 +63,7 @@ class WaBlasService
             $stmt->execute([':tagihan' => $tagihan]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $result ? $result['status'] : 'unknown'; 
+            return $result ? $result['status'] : 'unknown';
         } catch (PDOException $e) {
             // Menangani exception PDO jika terjadi kesalahan
             error_log('Database query error: ' . $e->getMessage());
@@ -115,7 +115,7 @@ class WaBlasService
     //         return 0.0; // Mengembalikan 0.0 jika terjadi kesalahan
     //     }
     // }
-    
+
 
     private static function isPaid(string $tagihan): bool
     {
@@ -244,7 +244,7 @@ class WaBlasService
     //     return $response;
     // }
 
-    public static function sendSchedulesMessage(array $to, array $siswa, string $schedule, string $tagihan, string $jatuhTempo): object
+    public static function sendSchedulesMessage(array $to, array $siswa, string $schedule, string $tagihan, int $tagihanId, string $jatuhTempo): object
     {
         // Cek apakah tagihan sudah dibayar
         if (self::isPaid($tagihan)) {
@@ -261,7 +261,7 @@ class WaBlasService
 
         $bulan = date('m', strtotime($tagihan));
         $tahun = date('Y', strtotime($tagihan));
-        $jumlah_biaya = self::getJumlahTagihan($tagihan); 
+        $jumlah_biaya = self::getJumlahTagihan($tagihanId);
         $jumlah_biaya_formatted = number_format($jumlah_biaya, 2, ',', '.');
 
         for ($i = 0; $i < count($to); $i++) {
