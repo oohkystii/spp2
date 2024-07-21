@@ -52,59 +52,54 @@ class WaBlasService
         return self::$pdo;
     }
 
+    // Metode untuk mendapatkan status tagihan
+    private static function getTagihanStatus(string $tagihan): string
+    {
+        try {
+            // Asumsi: self::getPdo() adalah metode yang mengembalikan instance PDO yang sudah terkoneksi dengan database
+            $pdo = self::getPdo();
+
+            $query = 'SELECT status FROM tagihans WHERE siswa_id = :tagihan LIMIT 1';
+            $stmt = $pdo->prepare($query);
+            $stmt->execute([':tagihan' => $tagihan]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            return $result ? $result['status'] : 'unknown';
+        } catch (PDOException $e) {
+            // Menangani exception PDO jika terjadi kesalahan
+            error_log('Database query error: ' . $e->getMessage());
+            return 'error'; // Mengembalikan 'error' jika terjadi kesalahan
+        }
+    }
+
 
     // Metode untuk mendapatkan jumlah tagihan
-    private static function getJumlahTagihan(string $tagihan_id): float
+    private static function getJumlahTagihan(string $tagihan_details): float
     {
         try {
             // Mendapatkan instance PDO
             $pdo = self::getPdo();
-
-            // Menghitung total jumlah yang sudah dibayarkan
-            $pembayaranQuery = '
-                SELECT SUM(jumlah_dibayar) as total_dibayar
-                FROM pembayarans
-                WHERE tagihan_id = :tagihan_id
-            ';
-            $stmtPembayaran = $pdo->prepare($pembayaranQuery);
-            $stmtPembayaran->execute([':tagihan_id' => $tagihan_id]);
-            $pembayaran = $stmtPembayaran->fetch(PDO::FETCH_ASSOC);
-            $totalDibayar = isset($pembayaran['total_dibayar']) ? (float)$pembayaran['total_dibayar'] : 0.0;
-
-            // Mengambil total jumlah tagihan dan statusnya
+            $pembayaran = Pembayaran::select('jumlah_dibayar')->where('tagihan_id', $tagihan_details)->sum('jumlah_dibayar');
             $queryTagihan = '
-                SELECT td.jumlah_biaya, t.status
+                SELECT td.jumlah_biaya
                 FROM tagihan_details td
                 JOIN tagihans t ON td.tagihan_id = t.id
-                WHERE td.tagihan_id = :tagihan_id
+                WHERE td.tagihan_id = :tagihan
                 LIMIT 1
             ';
-            $stmtTagihan = $pdo->prepare($queryTagihan);
-            $stmtTagihan->execute([':tagihan_id' => $tagihan_id]);
-            $tagihan = $stmtTagihan->fetch(PDO::FETCH_ASSOC);
+            $stmt = $pdo->prepare($queryTagihan);
+            $stmt->execute([':tagihan' => $tagihan_details]);
+            $tagihan = $stmt->fetch(PDO::FETCH_ASSOC);
             $tagihanBiaya = isset($tagihan['jumlah_biaya']) ? (float)$tagihan['jumlah_biaya'] : 0.0;
-            $status = isset($tagihan['status']) ? $tagihan['status'] : '';
-
-            // Debugging output untuk memastikan nilai yang diambil benar
-            error_log("Total Dibayar: $totalDibayar");
-            error_log("Tagihan Biaya: $tagihanBiaya");
-            error_log("Status Tagihan: $status");
-
-            // Menghitung jumlah tagihan yang tersisa
-            $sisaTagihan = $tagihanBiaya - $totalDibayar;
-
-            // Menangani logika untuk status angsur
-            if ($status === 'angsur') {
-                return $sisaTagihan; // Mengembalikan sisa tagihan jika statusnya angsur
-            }
-
-            return $tagihanBiaya; // Mengembalikan jumlah tagihan penuh jika bukan angsur
+            // Mengembalikan jumlah_biaya jika ada, jika tidak, kembalikan 0.0
+            return $tagihanBiaya - $pembayaran;
         } catch (PDOException $e) {
             // Menangani exception PDO jika terjadi kesalahan
             error_log('Database query error: ' . $e->getMessage());
             return 0.0; // Mengembalikan 0.0 jika terjadi kesalahan
         }
     }
+
 
     // Metode untuk mendapatkan jumlah dibayar
     // private static function getJumlahDibayar(string $tagihan): float
