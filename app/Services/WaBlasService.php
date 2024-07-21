@@ -52,27 +52,6 @@ class WaBlasService
         return self::$pdo;
     }
 
-    // Metode untuk mendapatkan status tagihan
-    private static function getTagihanStatus(string $tagihan): string
-    {
-        try {
-            // Asumsi: self::getPdo() adalah metode yang mengembalikan instance PDO yang sudah terkoneksi dengan database
-            $pdo = self::getPdo();
-
-            $query = 'SELECT status FROM tagihans WHERE siswa_id = :tagihan LIMIT 1';
-            $stmt = $pdo->prepare($query);
-            $stmt->execute([':tagihan' => $tagihan]);
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            return $result ? $result['status'] : 'unknown';
-        } catch (PDOException $e) {
-            // Menangani exception PDO jika terjadi kesalahan
-            error_log('Database query error: ' . $e->getMessage());
-            return 'error'; // Mengembalikan 'error' jika terjadi kesalahan
-        }
-    }
-
-
     // Metode untuk mendapatkan jumlah tagihan
     private static function getJumlahTagihan(string $tagihan_details): float
     {
@@ -99,25 +78,6 @@ class WaBlasService
             return 0.0; // Mengembalikan 0.0 jika terjadi kesalahan
         }
     }
-
-
-    // Metode untuk mendapatkan jumlah dibayar
-    // private static function getJumlahDibayar(string $tagihan): float
-    // {
-    //     try {
-    //         // Mendapatkan instance PDO
-    //         $pdo = self::getPdo();
-    //         $query = 'SELECT jumlah_dibayar FROM pembayarans WHERE tagihan_id = :tagihan LIMIT 1';
-    //         $stmt = $pdo->prepare($query);
-    //         $stmt->execute([':tagihan' => $tagihan]);
-    //         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    //         return isset($result['jumlah_dibayar']) ? (float)$result['jumlah_dibayar'] : 0.0;
-    //     } catch (PDOException $e) {
-    //         // Menangani exception PDO jika terjadi kesalahan
-    //         error_log('Database query error: ' . $e->getMessage());
-    //         return 0.0; // Mengembalikan 0.0 jika terjadi kesalahan
-    //     }
-    // }
 
 
     private static function isPaid(string $tagihan): bool
