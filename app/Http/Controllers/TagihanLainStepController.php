@@ -40,10 +40,13 @@ class TagihanLainStepController extends Controller
         }
         
         session(['tagihan_untuk' => request('tagihan_untuk')]);
+
         if (request('tagihan_untuk') == 'semua') {
+            session(['all_students_selected' => true]); // Set session variable to indicate all students are selected
             return redirect()->route('tagihanlainstep.create', ['step' => 3]);
         }
-        
+
+        session()->forget('all_students_selected'); // Clear the session variable if not "semua"
 
         $query = Siswa::query();
         if (request()->filled('cari')) {
@@ -73,10 +76,16 @@ class TagihanLainStepController extends Controller
             Session::flash('error', 'Silahkan pilih tagihan untuk siapa');
             return redirect()->route('tagihanlainstep.create', ['step' => 1]);
         }
+
+        // Check if all students are selected
+        if (session('tagihan_untuk') != 'semua' && (session('data_siswa') == null || session('data_siswa')->isEmpty())) {
+            Session::flash('error', 'Silahkan pilih data siswa');
+            return redirect()->route('tagihanlainstep.create', ['step' => 2]);
+        }
         
         $data['activeStep3'] = 'active';
         $data['biayaList'] = Biaya::whereNull('parent_id')->get()->pluck('nama', 'id');
-        return view ('operator.tagihanlain_step3', $data);
+        return view('operator.tagihanlain_step3', $data);
     }
 
     public function step4()

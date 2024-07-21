@@ -154,7 +154,6 @@ Route::get('kartuspp', [KartuSppController::class, 'index'])->name('kartuspp.ind
 Route::get('export/excel', [LaporanTagihanController::class, 'exportToExcel'])->name('export.excel')->middleware('auth');
 Route::get('export/pembayaran', [LaporanPembayaranController::class, 'exportToExcel'])->name('export.pembayaran')->middleware('auth');
 Route::get('export/rekap_pembayaran', [LaporanRekapPembayaran::class, 'exportToExcel'])->name('export.rekap_pembayaran')->middleware('auth');
-// Route::get('export/rekap_pembayaran/pdf', [LaporanRekapPembayaran::class, 'exportRekapPembayaranPDF'])->name('export.rekap_pembayaran.pdf');
 
 
 Route::resource('payment', PaymentController::class);
