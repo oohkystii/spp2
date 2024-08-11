@@ -67,13 +67,14 @@ class WaliImportController extends Controller
             }
         }
 
+        
         // Prepare messages for duplicates or incomplete entries
         if (!empty($duplicateEntries)) {
             return redirect()->route('wali.index')->with('warning', 'Beberapa No HP sudah ada: ' . implode(', ', $duplicateEntries));
         }
 
         if (!empty($incompleteEntries)) {
-            return redirect()->route('wali.index')->with('error', 'Beberapa baris tidak lengkap: ' . implode(', ', $incompleteEntries) . '. Pastikan semua kolom diisi, terutama No HP dan Email.');
+            return redirect()->route('wali.index')->with('error', 'Beberapa baris tidak lengkap: ' . implode(', ', $incompleteEntries) . '. Pastikan semua kolom diisi');
         }
 
         return redirect()->route('wali.index')->with('success', 'Data berhasil diimpor.');

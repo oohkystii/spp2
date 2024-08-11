@@ -120,7 +120,9 @@
                                 @endforelse
                             </tbody>
                         </table>
-                        {!! $jobStatus->links() !!}
+                        <div class="mt-3">
+                            {!! $jobStatus->links() !!}
+                        </div>
                     </div>
                 </div>
             </div>

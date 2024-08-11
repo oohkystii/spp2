@@ -3,83 +3,56 @@
 namespace App\Exports;
 
 use App\Models\Siswa;
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Illuminate\Contracts\View\View;
+use Maatwebsite\Excel\Concerns\FromView;
 
-class RekapPembayaranExport implements FromCollection, WithHeadings, ShouldAutoSize
+class RekapPembayaranExport implements FromView
 {
     protected $kelas;
+    protected $tahun;
 
-    public function __construct($kelas = null)
+    public function __construct($kelas = null, $tahun = null)
     {
         $this->kelas = $kelas;
+        $this->tahun = $tahun;
     }
 
-    public function collection()
+    public function view(): View
     {
-        $siswaQuery = Siswa::orderBy('nama', 'asc');
-
+        $siswa = Siswa::orderBy('nama', 'asc');
         if ($this->kelas) {
-            $siswaQuery->where('kelas', $this->kelas);
+            $siswa->where('kelas', $this->kelas);
         }
-
-        $siswa = $siswaQuery->get();
-
-        if ($siswa->isEmpty()) {
-            return collect([]);
-        }
-
+        $siswa = $siswa->get();
         $dataRekap = [];
-        $months = ['JULI', 'AGUSTUS', 'SEPTEMBER', 'OKTOBER', 'NOVEMBER', 'DESEMBER', 'JANUARI', 'FEBRUARI', 'MARET', 'APRIL', 'MEI', 'JUNI'];
 
-        foreach ($siswa as $index => $itemSiswa) {
-            $dataRow = [
-                'NO' => $index + 1,
-                'NAMA SISWA' => $itemSiswa->nama,
-            ];
-
-            $tahun = date('Y');
-            $currentMonth = (int) date('n');
-
-            for ($i = 0; $i < count($months); $i++) {
-                $bulan = $i + 7;
-
-                if ($bulan > 12) {
-                    $bulan -= 12;
-                    $tahun++;
+        if (!$siswa->isEmpty()) {
+            foreach ($siswa as $itemSiswa) {
+                $dataTagihan = [];
+                $tahun = $this->tahun;
+                foreach (bulanSPP() as $bulan) {
+                    if ($bulan == 1) {
+                        $tahun = $tahun + 1;
+                    }
+                    $tagihan = $itemSiswa->tagihan->filter(function ($value) use ($bulan, $tahun) {
+                        return $value->tanggal_tagihan->year == $tahun && $value->tanggal_tagihan->month == $bulan;
+                    })->first();
+                    $dataTagihan[] = [
+                        'bulan' => ubahNamaBulan($bulan),
+                        'tahun' => $tahun,
+                        'tanggal_lunas' => $tagihan->tanggal_lunas ?? '-',
+                    ];
                 }
-
-                $tagihan = $itemSiswa->tagihan->filter(function ($value) use ($bulan, $tahun) {
-                    return $value->tanggal_tagihan->year == $tahun && $value->tanggal_tagihan->month == $bulan;
-                })->first();
-
-                $dataRow[$months[$i]] = $tagihan ? ($tagihan->tanggal_lunas ? $tagihan->tanggal_lunas->format('d/m/Y') : '-') : '-';
+                $dataRekap[] = [
+                    'siswa' => $itemSiswa,
+                    'dataTagihan' => $dataTagihan
+                ];
             }
-
-            $dataRekap[] = $dataRow;
         }
 
-        return collect($dataRekap);
-    }
-
-    public function headings(): array
-    {
-        return [
-            'NO',
-            'NAMA SISWA',
-            'JULI',
-            'AGUSTUS',
-            'SEPTEMBER',
-            'OKTOBER',
-            'NOVEMBER',
-            'DESEMBER',
-            'JANUARI',
-            'FEBRUARI',
-            'MARET',
-            'APRIL',
-            'MEI',
-            'JUNI',
-        ];
+        return view('exports.rekappembayaran', [
+            'dataRekap' => $dataRekap,
+            'header' => bulanSPP()
+        ]);
     }
 }

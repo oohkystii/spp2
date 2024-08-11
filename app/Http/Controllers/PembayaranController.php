@@ -79,8 +79,13 @@ class PembayaranController extends Controller
         $wali = $pembayaran->wali;
         if ($wali != null) {
             $wa = new WaBlasService();
-            // EDIT BESAR
-            $wa->sendSingleMessage($wali->nohp, 'Pembayaran anda sebesar Rp. ' . number_format($pembayaran->jumlah_dibayar, 0, ',', '.') . ' telah kami terima. Terima kasih.');
+            // EDIT PESAN
+            $message = 'Pembayaran anda sebesar Rp. ' . number_format($pembayaran->jumlah_dibayar, 0, ',', '.') . ' telah lunas.';
+            if (!$tagihan->isPaid()) {
+                $sisaTagihan = $tagihan->totalTagihan - $tagihan->totalPembayaran;
+                $message .= $sisaTagihan > 0 ? ' Sisa tagihan ' .$sisaTagihan .'.' : '';
+            }
+            $wa->sendSingleMessage($wali->nohp, $message .' Terima Kasih.');
             $wali->notify(new PembayaranKonfirmasiNotification($pembayaran));
         }
         flash('Pembayaran berhasil disimpan');

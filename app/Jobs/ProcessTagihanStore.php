@@ -82,14 +82,13 @@ class ProcessTagihanStore implements ShouldQueue
                         'nama_biaya' => $itemBiaya->nama,
                         'jumlah_biaya' => $itemBiaya->jumlah,
                     ]);
-                    $jumlahBiaya = $itemBiaya->jumlah;
                 }
             }
         }
         try {
             $wa = new WaBlasService();
-            $wa->sendMultipleMessage($numbersHPWali, $dataSiswa, $tanggalJatuhTempoFormatted, $requestData['tanggal_tagihan'], $jumlahBiaya);
-            $wa->sendSchedulesMessage($numbersHPWali, $dataSiswa, $tanggalPemberitahuanFormatted, $requestData['tanggal_tagihan'], $tagihan->id, $tanggalJatuhTempoFormatted);
+            // $wa->sendMultipleMessage($numbersHPWali, $dataSiswa, $tanggalJatuhTempoFormatted, $requestData['tanggal_tagihan'], $jumlahBiaya);
+            $wa->sendSchedulesMessage($numbersHPWali, $dataSiswa, $tanggalPemberitahuanFormatted, $requestData['tanggal_tagihan'], $tagihan->id, $tanggalJatuhTempoFormatted, $itemBiaya->nama);
             $this->setOutput(['message' => 'Tagihan Bulan ' . ubahNamaBulan($bulanTagihan) . ' ' . $tahunTagihan . ' berhasil dibuat']);
         } catch (\Exception $e) {
             $this->setOutput(['message' => 'Tagihan Bulan ' . ubahNamaBulan($bulanTagihan) . ' ' . $tahunTagihan . ' gagal dikirim. Error: ' . $e->getMessage()]);

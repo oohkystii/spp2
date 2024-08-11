@@ -52,6 +52,11 @@ class Tagihan extends Model
         );
     }
 
+    public function getTotalPembayaran()
+    {
+        return  $this->pembayaran->sum('jumlah_dibayar');
+    }
+
     public function getTahunAjaranAttribute()
     {
         $bulanAwal = bulanSPP()[0]; //7
@@ -123,6 +128,11 @@ class Tagihan extends Model
     public function scopeWaliSiswa($q)
     {
         return $q->whereIn('siswa_id', Auth::user()->getAllSiswaId());
+    }
+
+    public function isPaid()
+    {
+        return $this->status === 'lunas';
     }
 
     // mengubah status tagihan 

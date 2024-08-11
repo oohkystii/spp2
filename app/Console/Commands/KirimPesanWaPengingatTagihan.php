@@ -34,7 +34,8 @@ class KirimPesanWaPengingatTagihan extends Command
         $templateReplace = [
             '{bulan}' => 'Januari',
             '{tahun}' => '2024',
-            '{nama}' => 'Kysti Qoriah'
+            '{nama}' => 'Kysti Qoriah',
+            '{jumlah_biaya}' => '100.000',
         ];
 
         $templateTeks = str_replace(array_keys($templateReplace), array_values($templateReplace), $templateTeks);
@@ -47,7 +48,7 @@ class KirimPesanWaPengingatTagihan extends Command
                 $templateReplace = [
                     '{bulan}' => $item->tanggal_tagihan->translatedFormat('F'),
                     '{tahun}' => $item->tanggal_tagihan->translatedFormat('Y'),
-                    '{nama}' => $item->siswa->nama
+                    '{nama}' => $item->siswa->nama,
                 ];
                 $pesan = str_replace(array_keys($templateReplace), array_values($templateReplace), $templateTeks);
                 if ($item->siswa->wali!= null && $item->siswa->wali->nohp != null) {

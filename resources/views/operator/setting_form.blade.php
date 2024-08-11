@@ -39,14 +39,15 @@
                                     <div>{bulan}: Bulan tagihan</div>
                                     <div>{tahun}: Tahun tagihan</div>
                                     <div>{nama}: Nama Siswa</div>
-                                    <div>{jumlah_biaya}: Total Tagihan</div> <!-- Menampilkan total tagihan -->
+                                    <div>{jumlah_biaya}: Total Tagihan</div>
                                     <div>{jatuh-tempo}: Tanggal jatuh tempo</div>
+                                    <div>{nama_biaya}: Nama Tagihan</div>
                                     <hr>
                                     <div class="fw-bold">Contoh Template :</div>
                                     <div>
                                         <i>
                                             Assalamualaikum Bapak Ibu, Semoga dalam keadaan sehat selalu.
-                                            Berikut kami informasikan Tagihan Biaya Sekolah Bulan {bulan} {tahun} atas nama {nama} dengan jumlah tagihan {jumlah_biaya}.
+                                            Berikut kami informasikan Tagihan {nama_biaya} Bulan {bulan} {tahun} atas nama {nama} dengan jumlah tagihan {jumlah_biaya}.
                                             Terima kasih.
                                         </i>
                                     </div>
@@ -55,7 +56,7 @@
                                         <i>
                                             Assalamualaikum Bapak Ibu, Semoga dalam keadaan sehat selalu. <br> Berikut kami
                                             informasikan
-                                            Tagihan Biaya Sekolah Bulan {{ date('F') }} {{ date('Y') }} atas nama Kysti
+                                            Tagihan SPP Bulan {{ date('F') }} {{ date('Y') }} atas nama Kysti
                                             Qoriah dengan jumlah tagihan 100.000. <br> Terima
                                             kasih.
                                         </i>

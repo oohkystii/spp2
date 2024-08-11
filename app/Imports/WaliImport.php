@@ -40,12 +40,11 @@ class WaliImport implements ToModel, WithStartRow, WithValidation
     public function rules(): array
     {
         return [
-            '1' => 'required|unique:users,nohp', // Ensure unique phone number
-            '2' => 'required|string|max:255',
-            '3' => 'required|email|max:255',
-            '4' => 'required', // Minimum password length
-            '5' => 'required|string|max:255',
-            // Add any additional validation rules if necessary
+            '1' => 'required|unique:users,nohp', 
+            '2' => 'required',
+            '3' => 'required',
+            '4' => 'required',
+            '5' => 'required',
         ];
     }
 

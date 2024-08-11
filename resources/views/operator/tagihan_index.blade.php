@@ -142,24 +142,30 @@
                                         </td>
                                         <td>{{ formatRupiah($item->tagihanDetails->sum('jumlah_biaya')) }}</td>
                                         <td>
-                                            {!! Form::open([
-                                                'route' => [$routePrefix . '.destroy', $item->id],
-                                                'method' => 'DELETE',
-                                                'onsubmit' => 'return confirm("Yakin ingin menghapus data ini?")',
-                                            ]) !!}
-                                            <a href="{{ route($routePrefix . '.show', [
-                                                $item->id,
-                                                'siswa_id' => $item->siswa_id,
-                                                'bulan' => $item->tanggal_tagihan->format('m'),
-                                                'tahun' => $item->tanggal_tagihan->format('Y'),
-                                            ]) }}" class="btn btn-info btn-sm mx-2">
-                                                <i class="fa fa-info"></i> Detail
-                                            </a>
-                                            <button type="submit" class="btn btn-danger btn-sm">
-                                                <i class="fa fa-trash"></i> Hapus
-                                            </button>
-                                            {!! Form::close() !!}
-                                        </td>                                        
+                                            <div class="d-flex">
+                                                <a href="{{ route($routePrefix . '.show', [
+                                                        $item->id,
+                                                        'siswa_id' => $item->siswa_id,
+                                                        'bulan' => $item->tanggal_tagihan->format('m'),
+                                                        'tahun' => $item->tanggal_tagihan->format('Y'),
+                                                    ]) }}" class="btn btn-info btn-sm mx-2">
+                                                    <i class="fa fa-info"></i> Detail
+                                                </a>
+                                                @if($item->status == 'baru')
+                                                    {!! Form::open([
+                                                        'route' => [$routePrefix . '.destroy', $item->id],
+                                                        'method' => 'DELETE',
+                                                        'onsubmit' => 'return confirm("Yakin ingin menghapus data ini?")',
+                                                        'class' => 'd-inline'
+                                                    ]) !!}
+                                                    <button type="submit" class="btn btn-danger btn-sm mx-2">
+                                                        <i class="fa fa-trash"></i> Hapus
+                                                    </button>
+                                                    {!! Form::close() !!}
+                                                @endif
+                                            </div>
+                                        </td>
+                                                                                    
                                     </tr>
                                     
                                 @empty

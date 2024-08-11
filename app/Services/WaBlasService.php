@@ -6,7 +6,6 @@ namespace App\Services;
 require_once realpath(__DIR__ . '/../../vendor/autoload.php');
 
 use App\Models\Message;
-use App\Models\Pembayaran;
 use App\Models\Token;
 use Dotenv\Dotenv;
 use PDO;
@@ -52,26 +51,45 @@ class WaBlasService
         return self::$pdo;
     }
 
+    // Metode untuk mendapatkan status tagihan
+    private static function getTagihanStatus(string $tagihan): string
+    {
+        try {
+            // Asumsi: self::getPdo() adalah metode yang mengembalikan instance PDO yang sudah terkoneksi dengan database
+            $pdo = self::getPdo();
+
+            $query = 'SELECT status FROM tagihans WHERE siswa_id = :tagihan LIMIT 1';
+            $stmt = $pdo->prepare($query);
+            $stmt->execute([':tagihan' => $tagihan]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            return $result ? $result['status'] : 'unknown';
+        } catch (PDOException $e) {
+            // Menangani exception PDO jika terjadi kesalahan
+            error_log('Database query error: ' . $e->getMessage());
+            return 'error'; // Mengembalikan 'error' jika terjadi kesalahan
+        }
+    }
+
+
     // Metode untuk mendapatkan jumlah tagihan
     private static function getJumlahTagihan(string $tagihan_details): float
     {
         try {
             // Mendapatkan instance PDO
             $pdo = self::getPdo();
-            $pembayaran = Pembayaran::select('jumlah_dibayar')->where('tagihan_id', $tagihan_details)->sum('jumlah_dibayar');
-            $queryTagihan = '
+            $query = '
                 SELECT td.jumlah_biaya
                 FROM tagihan_details td
                 JOIN tagihans t ON td.tagihan_id = t.id
                 WHERE td.tagihan_id = :tagihan
                 LIMIT 1
             ';
-            $stmt = $pdo->prepare($queryTagihan);
+            $stmt = $pdo->prepare($query);
             $stmt->execute([':tagihan' => $tagihan_details]);
-            $tagihan = $stmt->fetch(PDO::FETCH_ASSOC);
-            $tagihanBiaya = isset($tagihan['jumlah_biaya']) ? (float)$tagihan['jumlah_biaya'] : 0.0;
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
             // Mengembalikan jumlah_biaya jika ada, jika tidak, kembalikan 0.0
-            return $tagihanBiaya - $pembayaran;
+            return isset($result['jumlah_biaya']) ? (float)$result['jumlah_biaya'] : 0.0;
         } catch (PDOException $e) {
             // Menangani exception PDO jika terjadi kesalahan
             error_log('Database query error: ' . $e->getMessage());
@@ -162,7 +180,7 @@ class WaBlasService
         return $result->status;
     }
 
-    public static function sendMultipleMessage(array $to, array $siswa, string $tagihan, string $jatuhTempo, float $jumlah_biaya): object
+    public static function sendMultipleMessage(array $to, array $siswa, string $tagihan, string $jatuhTempo, float $jumlah_biaya)
     {
         $url = self::$baseUrl . "/send-message";
         $bulan = date('m', strtotime($tagihan));
@@ -207,7 +225,7 @@ class WaBlasService
         return $response;
     }
 
-    public static function sendSchedulesMessage(array $to, array $siswa, string $schedule, string $tagihan, int $tagihanId, string $jatuhTempo): object
+    public static function sendSchedulesMessage(array $to, array $siswa, string $schedule, string $tagihan, int $tagihanId, string $jatuhTempo, string $tagihanDetails): object
     {
         // Cek apakah tagihan sudah dibayar
         if (self::isPaid($tagihan)) {
@@ -231,7 +249,7 @@ class WaBlasService
             $data[] = [
                 "category" => "text",
                 "phone" => $to[$i],
-                "text" => str_replace(['{bulan}', '{tahun}', '{nama}', '{jatuh-tempo}', '{jumlah_biaya}'], [$bulan, $tahun, $siswa[$i], $jatuhTempo, $jumlah_biaya_formatted], $message),
+                "text" => str_replace(['{bulan}', '{tahun}', '{nama}', '{jatuh-tempo}', '{jumlah_biaya}', '{nama_biaya}'], [$bulan, $tahun, $siswa[$i], $jatuhTempo, $jumlah_biaya_formatted, $tagihanDetails], $message),
                 "scheduled_at" => $schedule // example date : "2021-09-01 10:00:00",
             ];
         }
