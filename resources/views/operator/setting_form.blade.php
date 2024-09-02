@@ -19,20 +19,7 @@
                                 {!! Form::number('app_pagination', settings('app_pagination'), ['class' => 'form-control']) !!}
                                 <span class="text-danger">{{ $errors->first('app_pagination') }}</span>
                             </div>
-                            {{-- <div class="form-group mt-3">
-                                <label for="no_wa_operator">Nomor Whatsapp Operator / Penanggung Jawab Aplikasi (contoh: 628977571654)</label>
-                                {!! Form::number('no_wa_operator', settings('no_wa_operator'), ['class' => 'form-control']) !!}
-                                <span class="text-danger">{{ $errors->first('no_wa_operator') }}</span>
-                            </div> --}}
                             <hr />
-                            {{-- <div class="form-group mt-3">
-                                <label for="pesan_bulan">Kirim Pesan Whatsapp Otomatis Pengingat Tagihan Setiap Tanggal/bulan</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">Tanggal dan Jam Kirim Otomatis</span>
-                                    {!! Form::selectRange('tanggal_ke', 1, 31, settings('tanggal_ke'), ['class' => 'form-control', 'placeholder' => 'Pilih Tanggal Kirim Otomatis']) !!}
-                                    {!! Form::time('jam_ke', settings('jam_ke'), ['class' => 'form-control', 'placeholder' => 'Pilih Jam Kirim Otomatis']) !!}
-                                </div>
-                            </div> --}}
                             <div class="form-group mt-3">
                                 <div class="alert alert-secondary text-black" role="alert">
                                     <strong>Format / Template Pesan Whatsapp Otomatis:</strong>
@@ -42,32 +29,41 @@
                                     <div>{jumlah_biaya}: Total Tagihan</div>
                                     <div>{jatuh-tempo}: Tanggal jatuh tempo</div>
                                     <div>{nama_biaya}: Nama Tagihan</div>
+                                    <div>{total_dibayar}: Total yang sudah dibayar (hanya untuk status "angsur")</div>
+                                    <div>{sisa_pembayaran}: Sisa pembayaran (hanya untuk status "angsur")</div>
                                     <hr>
-                                    <div class="fw-bold">Contoh Template :</div>
+                                    <div class="fw-bold">Contoh Template:</div>
                                     <div>
                                         <i>
-                                            Assalamualaikum Bapak Ibu, Semoga dalam keadaan sehat selalu.
-                                            Berikut kami informasikan Tagihan {nama_biaya} Bulan {bulan} {tahun} atas nama {nama} dengan jumlah tagihan {jumlah_biaya}.
-                                            Terima kasih.
+                                            Assalamualaikum Bapak Ibu, Semoga dalam keadaan sehat selalu.<br>
+                                            Berikut kami informasikan Tagihan {nama_biaya} Bulan {bulan} {tahun} atas nama {nama}
+                                            dengan jumlah tagihan {jumlah_biaya}. Terima kasih.
                                         </i>
                                     </div>
-                                    <div class="fw-bold">Pesan yang akan terkirim :</div>
+                                    <hr>
+                                    <div class="fw-bold">Pesan yang akan terkirim:</div>
                                     <div>
                                         <i>
-                                            Assalamualaikum Bapak Ibu, Semoga dalam keadaan sehat selalu. <br> Berikut kami
-                                            informasikan
-                                            Tagihan SPP Bulan {{ date('F') }} {{ date('Y') }} atas nama Kysti
-                                            Qoriah dengan jumlah tagihan 100.000. <br> Terima
-                                            kasih.
+                                            Assalamualaikum Bapak Ibu, Semoga dalam keadaan sehat selalu.<br>
+                                            Berikut kami informasikan Tagihan SPP Bulan {{ date('F') }} {{ date('Y') }} atas nama
+                                            Kysti Qoriah dengan jumlah tagihan 100.000. Terima kasih.
                                         </i>
                                     </div>
                                 </div>
-                                <label for="template_pengingat_tagihan">Format / Template Pesan Whatsapp Otomatis</label>
-                                {!! Form::textarea('template_pengingat_tagihan', $message, [
+
+                                <label for="template_pengingat_tagihan">Format / Template Pesan Whatsapp Otomatis - Baru</label>
+                                {!! Form::textarea('template_pengingat_tagihan', settings('template_pengingat_tagihan'), [
                                     'class' => 'form-control',
                                     'rows' => 3,
                                 ]) !!}
                                 <span class="text-danger">{{ $errors->first('template_pengingat_tagihan') }}</span>
+
+                                <label for="template_pengingat_tagihan_angsur">Format / Template Pesan Whatsapp Otomatis - Angsur</label>
+                                {!! Form::textarea('template_pengingat_tagihan_angsur', settings('template_pengingat_tagihan_angsur'), [
+                                    'class' => 'form-control',
+                                    'rows' => 3,
+                                ]) !!}
+                                <span class="text-danger">{{ $errors->first('template_pengingat_tagihan_angsur') }}</span>
                             </div>
                             {!! Form::submit('UPDATE', ['class' => 'btn btn-primary mt-2']) !!}
                         </div>

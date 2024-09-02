@@ -36,6 +36,7 @@ class WaliMuridTagihanController extends Controller
                 'Authorization' => 'Basic ' . base64_encode(env('MIDTRANS_SERVER_KEY') . ':')
             ])->get('https://api.sandbox.midtrans.com/v2/' . $tagihan->id . '/status');
             $responseJson = $response->json();
+            dd($responseJson);
             $statusPembayaran = $responseJson['transaction_status'];
             if ($statusPembayaran == 'settlement') {
                 //update status pembayaran

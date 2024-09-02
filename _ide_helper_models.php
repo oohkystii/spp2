@@ -103,19 +103,6 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * App\Models\QRCode
- *
- * @property-read \App\Models\Siswa|null $siswa
- * @property-read \App\Models\Tagihan|null $tagihan
- * @method static \Illuminate\Database\Eloquent\Builder|QRCode newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|QRCode newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|QRCode query()
- */
-	class QRCode extends \Eloquent {}
-}
-
-namespace App\Models{
-/**
  * App\Models\Setting
  *
  * @property int $id

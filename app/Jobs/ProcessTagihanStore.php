@@ -91,7 +91,7 @@ class ProcessTagihanStore implements ShouldQueue
             $wa->sendSchedulesMessage($numbersHPWali, $dataSiswa, $tanggalPemberitahuanFormatted, $requestData['tanggal_tagihan'], $tagihan->id, $tanggalJatuhTempoFormatted, $itemBiaya->nama);
             $this->setOutput(['message' => 'Tagihan Bulan ' . ubahNamaBulan($bulanTagihan) . ' ' . $tahunTagihan . ' berhasil dibuat']);
         } catch (\Exception $e) {
-            $this->setOutput(['message' => 'Tagihan Bulan ' . ubahNamaBulan($bulanTagihan) . ' ' . $tahunTagihan . ' gagal dikirim. Error: ' . $e->getMessage()]);
+            $this->setOutput(['message' => 'Tagihan Bulan ' . ubahNamaBulan($bulanTagihan) . ' ' . $tahunTagihan . ' gagal dikirim']);
         }
     }
 }

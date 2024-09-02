@@ -26,7 +26,7 @@ class WaBlasService
         // set token from .env file
         // self::$token = $_ENV['TOKEN_WABLAS'];
         self::$token = Token::first()->token ?? '';
-        self::$baseUrl = $_ENV['BASE_URL_API'];
+        self::$baseUrl = env('BASE_URL_API');
     }
     // Inisialisasi koneksi PDO
     private static function getPdo(): PDO
@@ -178,51 +178,6 @@ class WaBlasService
         // dd($result);
         // return $result->status
         return $result->status;
-    }
-
-    public static function sendMultipleMessage(array $to, array $siswa, string $tagihan, string $jatuhTempo, float $jumlah_biaya)
-    {
-        $url = self::$baseUrl . "/send-message";
-        $bulan = date('m', strtotime($tagihan));
-        $tahun = date('Y', strtotime($tagihan));
-        $message = Message::first()->message ?? '';
-        // Format jumlah_biaya
-        $jumlah_biaya_formatted = number_format($jumlah_biaya, 2, ',', '.');
-        $data = array();
-        for ($i = 0; $i < count($to); $i++) {
-            $data[] = [
-                "phone" => $to[$i],
-                "message" => str_replace(['{bulan}', '{tahun}', '{nama}', '{jatuh-tempo}', '{jumlah_biaya}'], [$bulan, $tahun, $siswa[$i], $jatuhTempo, $jumlah_biaya_formatted], $message),
-            ];
-        }
-
-        $payload = [
-            "data" => $data
-        ];
-        // dd(json_encode($body));
-
-
-        $curl = curl_init($url);
-        curl_setopt(
-            $curl,
-            CURLOPT_HTTPHEADER,
-            array(
-                "Authorization: " . self::$token,
-                "Content-Type: application/json"
-            )
-        );
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($payload));
-        curl_setopt($curl, CURLOPT_URL,  "https://jkt.wablas.com/api/v2/send-message");
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
-
-        $result = curl_exec($curl);
-        $response = json_decode($result);
-        curl_close($curl);
-        echo "<script> console.log('$result')</script>";
-        return $response;
     }
 
     public static function sendSchedulesMessage(array $to, array $siswa, string $schedule, string $tagihan, int $tagihanId, string $jatuhTempo, string $tagihanDetails): object

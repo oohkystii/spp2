@@ -157,6 +157,7 @@ Route::get('export/rekap_pembayaran', [LaporanRekapPembayaran::class, 'exportToE
 
 
 Route::resource('payment', PaymentController::class);
+Route::post('/midtrans/callback', [PaymentController::class, 'midtransCallback']);
 
 Route::get('logout', function () {
     Auth::logout();

@@ -6,7 +6,10 @@
         $(document).ready(function () {
             $("#pay-button").click(function (e) {
                 e.preventDefault();
-                var url = "/walimurid/pembayaranmidtrans?tagihan_id={{ $tagihan->id }}";
+                
+                var metodePembayaran = $('input[name="metode_pembayaran"]:checked').val();
+                var url = `/walimurid/pembayaranmidtrans?tagihan_id={{ $tagihan->id }}&metode_pembayaran=${metodePembayaran}`;
+                
                 $.getJSON(url, function(data) {
                     snap.pay(data.snapToken, {
                         onSuccess: function(result) {
@@ -111,7 +114,30 @@
                         <h5>Pembayaran Otomatis</h5>
                         <p>Pembayaran otomatis menggunakan pihak ketiga, anda akan dikenakan biaya tambahan sebesar Rp. 4000,-</p>
                         <p>Status Pembayaran: <b>{{ getStatusPembayaranTeks($statusPembayaran) }}</b></p>
-                        <button id="pay-button" class="btn btn-primary">Bayar Sekarang</button>
+                        
+                        <!-- Note about installment payments -->
+                        <div class="alert alert-info">
+                            <strong>Catatan:</strong> Pembayaran angsuran hanya dapat dilakukan maksimal 2 kali.
+                        </div>
+
+                        <!-- Pilihan Pembayaran -->
+                        @if ($tagihan->status !== 'angsur' && $tagihan->status !== 'lunas')
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="metode_pembayaran" id="bayarPenuh" value="full" checked>
+                                <label class="form-check-label" for="bayarPenuh">
+                                    Bayar Penuh
+                                </label>
+                            </div>
+                        @endif
+                        @if ($tagihan->status !== 'lunas')
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="metode_pembayaran" id="angsuran" value="installment">
+                                <label class="form-check-label" for="angsuran">
+                                    Cicilan (2x Pembayaran)
+                                </label>
+                            </div>
+                        @endif
+                        <button id="pay-button" class="btn btn-primary mt-3">Bayar Sekarang</button>
                     </div>
                 </div>
             </div>

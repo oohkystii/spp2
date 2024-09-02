@@ -12,8 +12,6 @@ use App\Models\User;
 use App\Models\Tagihan;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
-use Picqer\Barcode\BarcodeGeneratorHTML;
 
 
 
@@ -24,26 +22,6 @@ class SiswaController extends Controller
     private $viewEdit = 'siswa_form';
     private $viewShow = 'siswa_show';
     private $routePrefix = 'siswa';
-
-
-    public function generateQrCodeData($siswa)
-    {
-        $qrCodeData = [
-            'nama' => $siswa->nama,
-            'nisn' => $siswa->nisn,
-            'jurusan' =>$siswa->jurusan,
-            'kelas' => $siswa->kelas,
-        ];
-
-        return json_encode($qrCodeData);
-    }
-
-    public function generateBarcode($siswa)
-    {
-        $qrCodeData = $this->generateQrCodeData($siswa);
-        $barcode = QrCode::generate($qrCodeData);
-        return $barcode; 
-    }
 
 
     /**
@@ -118,7 +96,6 @@ class SiswaController extends Controller
         return view('operator.' . $this->viewShow, [
             'model' => $siswa,
             'title' => 'Detail Siswa',
-            'barcode' => $this->generateBarcode($siswa),
         ]);
     }
 
